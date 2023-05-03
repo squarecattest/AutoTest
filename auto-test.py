@@ -1,7 +1,6 @@
 from subprocess import run, TimeoutExpired
 from os.path import isdir, isfile, join
 from os import listdir, makedirs
-from io import BytesIO
 from argparse import ArgumentParser
 from time import time
 from typing import TextIO
