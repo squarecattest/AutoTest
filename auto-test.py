@@ -93,7 +93,7 @@ class Checker:
         return ("Result: WA", f"Runtime: {Timer.string_format(self.runtime)}",
                 f" - <At line {self.lineno}>", 
                 f" - Expected: {self.EOL_check(self.expected)}",
-                f" - Found: {self.EOL_check(self.found)}")
+                f" - Found:    {self.EOL_check(self.found)}")
 
 def Execute(exe: str, sinfile: TextIO, soutfile: TextIO | None,
             output: AutoFormatIO, output_i: str, counter: int):
