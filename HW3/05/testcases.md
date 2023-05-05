@@ -16,6 +16,8 @@ Dead knights attack
 Dead knights get targeted
 ### 3-3
 Attacking allies
+### 3-4, 3-5, 3-6
+Instant fightback
 
 # 4
 Joint attacks
@@ -25,6 +27,27 @@ One-way stacking
 Some attacks fail (attacking allies)
 
 # 5
-Ranged attack
+Ranged attacks
 ### 5-4, 5-5
 One-way stacking
+### 5-6, 5-6
+Some attacks fail (attacking allies)
+
+# 6
+Mixtures
+
+### 6-1
+A target with a dead ally
+### 6-2
+An attacker with a dead ally
+### 6-3
+A dead knight attacks a dead knight
+
+# 7
+n = m = 20
+
+# 8
+n = m = 1000
+
+# 9
+n = m = 2e5
