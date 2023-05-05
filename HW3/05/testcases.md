@@ -42,6 +42,8 @@ A target with a dead ally
 An attacker with a dead ally
 ### 6-3
 A dead knight attacks a dead knight
+### 6-4
+Overflow check
 
 # 7
 n = m = 20
