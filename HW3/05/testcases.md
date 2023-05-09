@@ -48,19 +48,9 @@ Overflow check
 # 7
 n = m = 20
 
-
 # 8
 n = m = 1000
 
-### 8-1, 8-2
-One-way stacking
-### 8-3, 8-4
-Half of attacks fail
-
 # 9
 n = m = 2e5
-
-### 9-1, 9-2
-One-way stacking
-### 9-3, 9-4
-Half of attacks fail
+(No sample output yet)
