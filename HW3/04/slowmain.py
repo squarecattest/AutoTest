@@ -1,8 +1,6 @@
 from typing import TextIO
 from sys import stdin, stdout
 
-Alphas = "ABCDEFGHIJKLMNOP"
-
 def rotations(pattern: str):
     return tuple(pattern[i:] + pattern[:i] for i in range(len(pattern)))
 
