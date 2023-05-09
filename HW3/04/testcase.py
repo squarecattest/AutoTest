@@ -1,4 +1,4 @@
-from slowmain import main, rotations, TextIO
+from main import main, rotations, TextIO
 from string import ascii_uppercase as Alphas
 from random import randint, random, choice
 
