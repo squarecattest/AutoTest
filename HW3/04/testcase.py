@@ -1,6 +1,6 @@
 from slowmain import main, rotations, TextIO
 from string import ascii_uppercase as Alphas
-from random import randint, shuffle, sample, random, choice
+from random import randint, random, choice
 
 def trigger(p: float):
     return random() < p
