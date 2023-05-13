@@ -97,11 +97,6 @@ class Checker:
 
 def Execute(exe: str, sinfile, soutfile, output, output_i, counter):
     with open(output_i, "w+") as outputfile:
-        output.write(linesep)
-        output.write(f"Testcase #{counter}: {sinfile.name}")
-        if soutfile is None:
-            output.write("<sample output not found>")
-        output.write("")
         TLE = False
         Timer.start()
         try:
@@ -114,11 +109,16 @@ def Execute(exe: str, sinfile, soutfile, output, output_i, counter):
             TLE = True
         
         result, log = LogProcess(exitcode, runtime, TLE, soutfile, outputfile)
+        output.write(linesep)
+        output.write(f"Testcase #{counter}: {sinfile.name}")
+        if soutfile is None:
+            output.write("<sample output not found>")
+        output.write("")
         for line in log:
             output.write(line)
         return result
 
-def LogProcess(exitcode: int, runtime: int, IsTLE: bool, sout, out):
+def LogProcess(exitcode, runtime, IsTLE, sout, out):
     if IsTLE:
         return ("TLE", ("Result: TLE", f"Runtime: >{Timer.string_format(runtime)}"))
     if exitcode != 0:
@@ -187,22 +187,23 @@ if __name__ == "__main__":
                             Execute(exe_file, sinfile, None, tmpoutputAF, filename_out, counter)
                         ).append(sin)
                 counter += 1
-
-            tmpoutputAF.write(linesep)
-        counter -= 1
-        with open(tmpoutputfile, "r") as tmpoutput:
-            with open(args.log, "w") as output:
-                output.write("Results:\n")
-                for key, value in results.items():
-                    output.write(f">>\t{key}: {len(value)}/{counter}\n")
-                    if key == "AC":
-                        continue
-                    for filename in value:
-                        output.write(f">>\t\t{filename}\n")
-                while text := tmpoutput.readline():
-                    output.write(text)
-        remove(tmpoutputfile)
-        print("Tests end.")
-    except:
-        remove(tmpoutputfile)
-        raise
+    finally:
+        try:
+            with open(tmpoutputfile, "a+") as tmpoutput:
+                tmpoutputAF = AutoFormatIO(tmpoutput)
+                tmpoutputAF.write(linesep)
+                tmpoutput.seek(0)
+                counter -= 1
+                with open(args.log, "w") as output:
+                    output.write("Results:\n")
+                    for key, value in results.items():
+                        output.write(f">>\t{key}: {len(value)}/{counter}\n")
+                        if key == "AC":
+                            continue
+                        for filename in value:
+                            output.write(f">>\t\t{filename}\n")
+                    while text := tmpoutput.readline():
+                        output.write(text)
+        finally:
+            remove(tmpoutputfile)
+            print("Tests end.")
