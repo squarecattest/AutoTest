@@ -198,7 +198,7 @@ if __name__ == "__main__":
                     output.write("Results:\n")
                     for key, value in results.items():
                         output.write(f">>\t{key}: {len(value)}/{counter}\n")
-                        if key == "AC":
+                        if key in ("AC", "AC/WA"):
                             continue
                         for filename in value:
                             output.write(f">>\t\t{filename}\n")
