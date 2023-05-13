@@ -3,11 +3,13 @@
 
 目前可測試AC/WA/TLE/RE。MLE不會被偵測。由於使用python實作，測試時間會稍大於實際時間。
 ## 參數
+所有參數皆可選。
+
 `file`: 用於測試的執行檔位置，默認為`.\a.exe`。
 
 `sin`(sample input): 測資檔案資料夾位置，默認為`.\sin\`。
 
-`sout`(sample output，可選)：測資解答資料夾位置，默認為`.\sout\`。若資料夾不存在，將會丟出一個`Warning`。
+`sout`(sample output)：測資解答資料夾位置，默認為`.\sout\`。若資料夾不存在，將會丟出一個`Warning`。
 
 `outs`：測試輸出資料夾位置，默認為`.\outputs\`。
 
