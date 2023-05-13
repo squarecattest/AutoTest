@@ -17,7 +17,6 @@
 
 ## 指令
 `$ py .\auto-test.py`
-`$ python .\auto-test.py`
 
 以下所有參數皆可選。
 
