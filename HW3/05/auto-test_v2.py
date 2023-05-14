@@ -1,8 +1,9 @@
 from subprocess import run, TimeoutExpired
 from os.path import isdir, isfile, join
-from os import listdir, makedirs
+from os import listdir, makedirs, remove
 from argparse import ArgumentParser
 from time import time
+from random import randint
 
 linesep = "-" * 40
 
@@ -88,19 +89,14 @@ class Checker:
 
     def string_format(self):
         if self.AC:
-            return ("Result: AC", f"Runtime: {Timer.string_format(self.runtime)}")
-        return ("Result: WA", f"Runtime: {Timer.string_format(self.runtime)}",
+            return ("AC", ("Result: AC", f"Runtime: {Timer.string_format(self.runtime)}"))
+        return ("WA", ("Result: WA", f"Runtime: {Timer.string_format(self.runtime)}",
                 f" - <At line {self.lineno}>", 
                 f" - Expected: {self.EOL_check(self.expected)}",
-                f" - Found:    {self.EOL_check(self.found)}")
+                f" - Found: {self.EOL_check(self.found)}"))
 
 def Execute(exe: str, sinfile, soutfile, output, output_i, counter):
     with open(output_i, "w+") as outputfile:
-        output.write(linesep)
-        output.write(f"Testcase #{counter}: {sinfile.name}")
-        if soutfile is None:
-            output.write("<sample output not found>")
-        output.write("")
         TLE = False
         Timer.start()
         try:
@@ -112,16 +108,23 @@ def Execute(exe: str, sinfile, soutfile, output, output_i, counter):
             runtime = Timer.timeout
             TLE = True
         
-        for line in LogProcess(exitcode, runtime, TLE, soutfile, outputfile):
+        result, log = LogProcess(exitcode, runtime, TLE, soutfile, outputfile)
+        output.write(linesep)
+        output.write(f"Testcase #{counter}: {sinfile.name}")
+        if soutfile is None:
+            output.write("<sample output not found>")
+        output.write("")
+        for line in log:
             output.write(line)
+        return result
 
 def LogProcess(exitcode, runtime, IsTLE, sout, out):
     if IsTLE:
-        return ("Result: TLE", f"Runtime: >{Timer.string_format(runtime)}")
+        return ("TLE", ("Result: TLE", f"Runtime: >{Timer.string_format(runtime)}"))
     if exitcode != 0:
-        return ("Result: RE", f"Runtime: {Timer.string_format(runtime)}")
+        return ("RE", ("Result: RE", f"Runtime: {Timer.string_format(runtime)}"))
     if sout is None:
-        return ("Result: <AC or WA>", f"Runtime: {Timer.string_format(runtime)}")
+        return ("AC/WA", ("Result: <AC or WA>", f"Runtime: {Timer.string_format(runtime)}"))
     return Checker.string_format(Checker(sout, out, runtime))
 
 
@@ -138,7 +141,7 @@ if __name__ == "__main__":
                         help="Main output log location")
     parser.add_argument("-o", dest="outs", default=".\\outputs",
                         help="Individual output directory location")
-    parser.add_argument("-t", dest="timeout", type=int, default="5000",
+    parser.add_argument("-t", dest="timeout", type=int, default="2000",
                         help="Set the timeout in unit ms")
     args = parser.parse_args()
 
@@ -155,26 +158,52 @@ if __name__ == "__main__":
         makedirs(args.outs)
 
     exe_file = args.file
+    tmpoutputfile = f".\\tmp{randint(100000000, 999999999)}"
+    results: dict[str, list[str]] = {"AC": [], "WA": [], "AC/WA": [], "TLE": [], "RE": []}
     Timer.settimeout(args.timeout)
-    with open(args.log, "w") as output:
-        output = AutoFormatIO(output)
-        sins = listdir(args.sin)
-        if not len(sins):
-            raise FileNotFoundError("No sample input found")
-        counter = 1
+    try:
+        with open(tmpoutputfile, "w") as tmpoutput:
+            tmpoutputAF = AutoFormatIO(tmpoutput)
+            sins = listdir(args.sin)
+            if not len(sins):
+                raise FileNotFoundError("No sample input found")
+            counter = 1
 
-        for sin in sins:
-            filename_sin = join(args.sin, sin)
-            filename_sout = join(args.sout, sin)
-            filename_out = join(args.outs, sin)
-            print(f"Testing '{filename_sin}'")
-            with open(filename_sin) as sinfile:
-                if sin in souts:
-                    with open(filename_sout) as soutfile:
-                        Execute(exe_file, sinfile, soutfile, output, filename_out, counter)
-                else:
-                    Execute(exe_file, sinfile, None, output, filename_out, counter)
-            counter += 1
-
-        output.write(linesep)
-        print("Tests end.")
+            for sin in sins:
+                filename_sin = join(args.sin, sin)
+                filename_sout = join(args.sout, sin)
+                filename_out = join(args.outs, sin)
+                print(f"Testing '{filename_sin}'")
+                with open(filename_sin) as sinfile:
+                    if sin in souts:
+                        with open(filename_sout) as soutfile:
+                            results.get(
+                                Execute(
+                                    exe_file, sinfile, soutfile, tmpoutputAF, filename_out, counter
+                                )
+                            ).append(sin)
+                    else:
+                        results.get(
+                            Execute(exe_file, sinfile, None, tmpoutputAF, filename_out, counter)
+                        ).append(sin)
+                counter += 1
+    finally:
+        try:
+            with open(tmpoutputfile, "a+") as tmpoutput:
+                tmpoutputAF = AutoFormatIO(tmpoutput)
+                tmpoutputAF.write(linesep)
+                tmpoutput.seek(0)
+                counter -= 1
+                with open(args.log, "w") as output:
+                    output.write("Results:\n")
+                    for key, value in results.items():
+                        output.write(f">>\t{key}: {len(value)}/{counter}\n")
+                        if key in ("AC", "AC/WA"):
+                            continue
+                        for filename in value:
+                            output.write(f">>\t\t{filename}\n")
+                    while text := tmpoutput.readline():
+                        output.write(text)
+        finally:
+            remove(tmpoutputfile)
+            print("Tests end.")
