@@ -4,7 +4,7 @@ Correctness check
 
 (For each condition, small testcases are in the first half and large testcases are in the second half)
 ### 1-01 ~ 1-10
-No death, no joint attack, no no ranged attack, no failed attack
+No death, no joint attack, no ranged attack, no failed attack
 ### 1-11 ~ 1-20
 With deaths
 ### 1-21 ~ 1-30
@@ -26,6 +26,7 @@ n = m = 10
 a, h <= 40
 ### 3-01 ~ 3-99
 n = m = 15
+
 a, h <= 40
 
 # 4 (Subtask 1)
